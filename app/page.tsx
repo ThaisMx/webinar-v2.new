@@ -2,57 +2,34 @@
 
 import { Play, Lock } from "lucide-react";
 import { SocialProofPopup } from "@/components/SocialProofPopup";
-import { useState, useEffect } from "react";
-
-function getNextTimeSlot() {
-  const now = new Date();
-  const minutes = now.getMinutes();
-  const roundedMinutes = Math.ceil(minutes / 15) * 15;
-  const nextSlot = new Date(now);
-  nextSlot.setMinutes(roundedMinutes);
-  nextSlot.setSeconds(0);
-  
-  const timeOptions: Intl.DateTimeFormatOptions = {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true
-  };
-  
-  const dateOptions: Intl.DateTimeFormatOptions = {
-    weekday: "short",
-    day: "2-digit",
-    month: "2-digit"
-  };
-  
-  const dateStr = nextSlot.toLocaleDateString('pt-BR', dateOptions).replace(',', '');
-  const timeStr = nextSlot.toLocaleTimeString('pt-BR', timeOptions)
-    .replace(':00', ':00')
-    .toUpperCase();
-  
-  const diffMinutes = Math.ceil((nextSlot.getTime() - now.getTime()) / (1000 * 60));
-  
-  return `${dateStr}, ${timeStr} GMT-3 - Em ${diffMinutes} ${diffMinutes === 1 ? 'minuto' : 'minutos'}`;
-}
+import { ExitPopup } from "@/components/ExitPopup";
+import { useEffect } from "react";
 
 export default function Home() {
-  const [timeSlot, setTimeSlot] = useState(getNextTimeSlot());
-
   useEffect(() => {
-    // Atualiza o horário imediatamente
-    setTimeSlot(getNextTimeSlot());
+    // Adiciona o script do WebinarJam dinamicamente
+    const script = document.createElement('script');
+    script.src = "https://event.webinarjam.com/register/7y2y9c73/embed-form?formButtonText=Sistema%20de%205%20Partes%20-%20Gr%C3%A1tis!%20&formAccentColor=%2329b6f6&formAccentOpacity=0.95&formBgColor=%23ffffff&formBgOpacity=1";
+    script.async = true;
+    
+    // Encontra o wrapper do formulário e adiciona o script
+    const formWrapper = document.querySelector('.wj-embed-wrapper');
+    if (formWrapper) {
+      formWrapper.appendChild(script);
+    }
 
-    // Configura o intervalo para atualizar a cada minuto
-    const interval = setInterval(() => {
-      setTimeSlot(getNextTimeSlot());
-    }, 60 * 1000); // 1 minuto em milissegundos
-
-    // Limpa o intervalo quando o componente é desmontado
-    return () => clearInterval(interval);
+    // Cleanup ao desmontar o componente
+    return () => {
+      if (formWrapper && script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
   }, []);
 
   return (
     <main className="min-h-screen bg-[#1E1E1E] text-white">
       <SocialProofPopup />
+      <ExitPopup />
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <header className="text-center mb-8 pb-8 border-b border-white/10">
@@ -71,15 +48,15 @@ export default function Home() {
           <div className="relative aspect-video bg-black/50 rounded-lg overflow-hidden">
             <iframe 
               className="absolute inset-0 w-full h-full"
-              src="https://www.youtube.com/embed/l9ttRQ1CyP8"
-              title="YouTube video player"
+              src="https://player-vz-4c3ffc15-b98.tv.pandavideo.com.br/embed/?v=f2f1927d-04b1-4d69-b148-7cede68481e1"
+              title="Video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
           </div>
 
-          {/* Sign Up Form */}
+          {/* WebinarJam Form */}
           <div className="bg-[#2a2a2a] rounded-lg p-4 md:p-6">
             <div className="text-center mb-6">
               <div className="mb-4">
@@ -97,44 +74,7 @@ export default function Home() {
                 Partes!
               </h3>
             </div>
-
-            <form className="space-y-4">
-              <select className="w-full px-4 py-3 rounded bg-white text-gray-800 text-sm cursor-pointer">
-                <option>{timeSlot}</option>
-              </select>
-
-              <input
-                type="text"
-                placeholder="Nome"
-                className="w-full px-4 py-3 rounded bg-white text-gray-800 text-sm"
-              />
-
-              <input
-                type="email"
-                placeholder="Seu endereço de e-mail aqui..."
-                className="w-full px-4 py-3 rounded bg-white text-gray-800 text-sm"
-              />
-
-              <div className="flex gap-2">
-                <select className="w-[90px] px-2 py-3 rounded bg-white text-gray-800 text-sm flex items-center">
-                  <option value="55">🇧🇷 +55</option>
-                </select>
-                <input
-                  type="tel"
-                  placeholder="Número de telefone"
-                  className="flex-1 px-4 py-3 rounded bg-white text-gray-800 text-sm"
-                />
-              </div>
-
-              <button className="w-full bg-[#0096FF] hover:bg-[#0084E0] text-white font-bold py-4 rounded transition-colors">
-                <span className="block text-lg">Desbloqueie o Sistema de 5 Partes GRÁTIS!</span>
-                <span className="block text-sm">Avaliado em 4.9/5 estrelas no Trustpilot - Desbloqueie agora!</span>
-              </button>
-
-              <p className="text-[11px] text-gray-400 text-center mt-2">
-                Ao enviar seus dados, você concorda em permitir que coletemos e usemos suas informações de acordo com nossos Termos de Serviço e Política de Privacidade.
-              </p>
-            </form>
+            <div className="wj-embed-wrapper" data-webinar-hash="7y2y9c73"></div>
           </div>
         </div>
 
