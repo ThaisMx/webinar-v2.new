@@ -9,20 +9,6 @@ const nextConfig = {
     serverActions: true,
   },
   trailingSlash: true,
-  async rewrites() {
-    return {
-      beforeFiles: [
-        {
-          source: '/webinar-v2',
-          destination: '/'
-        },
-        {
-          source: '/webinar-v2/:path*',
-          destination: '/:path*'
-        }
-      ]
-    };
-  },
 };
 
 module.exports = nextConfig;
