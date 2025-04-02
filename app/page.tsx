@@ -6,6 +6,8 @@ import { ExitPopup } from "@/components/ExitPopup";
 import { useEffect } from "react";
 
 export default function Home() {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+  
   useEffect(() => {
     try {
       // Adiciona o script do WebinarJam dinamicamente
@@ -79,7 +81,7 @@ export default function Home() {
             <div className="text-center mb-6">
               <div className="mb-4">
                 <img
-                  src="/images/Mockup.png"
+                  src={`${basePath}/images/Mockup.png`}
                   alt="O Segredo das Mesas Proprietárias"
                   className="rounded-lg w-full"
                 />
@@ -107,7 +109,7 @@ export default function Home() {
             {[1, 2, 3, 4, 5].map((index) => (
               <div key={index} className="relative aspect-video bg-black/50 rounded-lg overflow-hidden group cursor-pointer">
                 <img
-                  src="/images/IMG_1377.JPG"
+                  src={`${basePath}/images/IMG_1377.JPG`}
                   alt="Imagem de apresentação"
                   className="w-full h-full object-cover"
                 />
