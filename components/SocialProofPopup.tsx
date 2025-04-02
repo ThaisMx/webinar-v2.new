@@ -24,34 +24,43 @@ const socialProofs: SocialProof[] = [
 
 export function SocialProofPopup() {
   const [isVisible, setIsVisible] = useState(false);
-  const [currentProof, setCurrentProof] = useState<SocialProof>(socialProofs[0]);
+  const [currentProof, setCurrentProof] = useState<SocialProof | null>(null);
+  const [isEnabled, setIsEnabled] = useState(true);
 
   useEffect(() => {
-    const showPopup = () => {
-      const randomProof = socialProofs[Math.floor(Math.random() * socialProofs.length)];
-      setCurrentProof(randomProof);
-      setIsVisible(true);
+    try {
+      const showPopup = () => {
+        if (!isEnabled) return;
+        
+        const randomProof = socialProofs[Math.floor(Math.random() * socialProofs.length)];
+        setCurrentProof(randomProof);
+        setIsVisible(true);
 
-      // Esconde o popup após 4 segundos
-      setTimeout(() => setIsVisible(false), 4000);
-    };
+        setTimeout(() => {
+          setIsVisible(false);
+        }, 4000);
+      };
 
-    // Mostra o primeiro popup após 2 segundos
-    const initialTimeout = setTimeout(showPopup, 2000);
+      // Mostra o primeiro popup após 2 segundos
+      const initialTimeout = setTimeout(showPopup, 2000);
 
-    // Configura o intervalo para mostrar os próximos popups
-    const interval = setInterval(() => {
-      const randomDelay = Math.floor(Math.random() * (7000 - 5000) + 5000); // Entre 5 e 7 segundos
-      showPopup();
-    }, 6000);
+      // Configura o intervalo para mostrar os próximos popups
+      const interval = setInterval(() => {
+        if (!isEnabled) return;
+        showPopup();
+      }, 6000);
 
-    return () => {
-      clearTimeout(initialTimeout);
-      clearInterval(interval);
-    };
-  }, []);
+      return () => {
+        clearTimeout(initialTimeout);
+        clearInterval(interval);
+      };
+    } catch (error) {
+      console.error('Erro no SocialProofPopup:', error);
+      setIsEnabled(false);
+    }
+  }, [isEnabled]);
 
-  if (!isVisible) return null;
+  if (!isVisible || !currentProof || !isEnabled) return null;
 
   return (
     <div className="fixed bottom-4 left-4 bg-white text-black p-4 rounded-lg shadow-lg animate-slide-up z-50 max-w-sm">

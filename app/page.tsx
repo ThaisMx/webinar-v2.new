@@ -7,23 +7,41 @@ import { useEffect } from "react";
 
 export default function Home() {
   useEffect(() => {
-    // Adiciona o script do WebinarJam dinamicamente
-    const script = document.createElement('script');
-    script.src = "https://event.webinarjam.com/register/7y2y9c73/embed-form?formButtonText=Sistema%20de%205%20Partes%20-%20Gr%C3%A1tis!%20&formAccentColor=%2329b6f6&formAccentOpacity=0.95&formBgColor=%23ffffff&formBgOpacity=1";
-    script.async = true;
-    
-    // Encontra o wrapper do formulário e adiciona o script
-    const formWrapper = document.querySelector('.wj-embed-wrapper');
-    if (formWrapper) {
-      formWrapper.appendChild(script);
-    }
-
-    // Cleanup ao desmontar o componente
-    return () => {
-      if (formWrapper && script.parentNode) {
-        script.parentNode.removeChild(script);
+    try {
+      // Adiciona o script do WebinarJam dinamicamente
+      const script = document.createElement('script');
+      script.src = "https://event.webinarjam.com/register/7y2y9c73/embed-form?formButtonText=Sistema%20de%205%20Partes%20-%20Gr%C3%A1tis!%20&formAccentColor=%2329b6f6&formAccentOpacity=0.95&formBgColor=%23ffffff&formBgOpacity=1";
+      script.async = true;
+      script.onerror = (error) => {
+        console.error('Erro ao carregar o script do WebinarJam:', error);
+      };
+      
+      // Encontra o wrapper do formulário e adiciona o script
+      const formWrapper = document.querySelector('.wj-embed-wrapper');
+      if (formWrapper) {
+        formWrapper.appendChild(script);
+      } else {
+        console.error('Wrapper do WebinarJam não encontrado');
       }
-    };
+
+      // Cleanup ao desmontar o componente
+      return () => {
+        if (formWrapper && script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+      };
+    } catch (error) {
+      console.error('Erro ao inicializar o WebinarJam:', error);
+    }
+  }, []);
+
+  // Adiciona verificação de carregamento para o iframe
+  useEffect(() => {
+    const iframe = document.querySelector('iframe');
+    if (iframe) {
+      iframe.onload = () => console.log('Iframe carregado com sucesso');
+      iframe.onerror = () => console.error('Erro ao carregar o iframe');
+    }
   }, []);
 
   return (

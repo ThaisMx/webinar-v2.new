@@ -1,25 +1,34 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 
 export function ExitPopup() {
   const [showPopup, setShowPopup] = useState(false);
   const [hasShown, setHasShown] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(true);
 
   useEffect(() => {
-    const handleMouseLeave = (e: MouseEvent) => {
-      if (e.clientY <= 0 && !hasShown) {
-        setShowPopup(true);
-        setHasShown(true);
-      }
-    };
+    try {
+      const handleMouseLeave = (e: MouseEvent) => {
+        if (!isEnabled) return;
+        if (e.clientY <= 0 && !hasShown) {
+          setShowPopup(true);
+          setHasShown(true);
+        }
+      };
 
-    document.addEventListener('mouseleave', handleMouseLeave);
+      document.addEventListener('mouseleave', handleMouseLeave);
 
-    return () => {
-      document.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, [hasShown]);
+      return () => {
+        document.removeEventListener('mouseleave', handleMouseLeave);
+      };
+    } catch (error) {
+      console.error('Erro no ExitPopup:', error);
+      setIsEnabled(false);
+    }
+  }, [hasShown, isEnabled]);
 
-  if (!showPopup) return null;
+  if (!showPopup || !isEnabled) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
